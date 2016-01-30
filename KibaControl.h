@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <limits.h>
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Kennlinien und Kennlinieninterpolation
+ */
 class map1D
 {
 	private:
@@ -24,7 +26,9 @@ class map1D
 		int iGetMaxSupportingPoint( void );								// liefert größte Stützstelle
 };
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * PID-Regler mit Gain-Scheduling und Anti-Windup
+ */
 class PIDcontrol
 {
 	private:

@@ -1,8 +1,49 @@
-#include "KibaControl.h"
+/*--------------------------------------------------------------------------------------------------*/
+/*	KibaControl		Kennlinien und -interpolation	  												*/
+/*					PID-Regler mit Gain-Scheduling und Anti-Windup									*/
+/*																									*/
+/*	Frank Kirschbaum (frank.kirschbaum@me.com) 														*/
+/*																									*/																		
+/*	Kibas Coding Standard and Style Guide: 															*/
+/* 	(frei nach http://www.freertos.org/FreeRTOS-Coding-Standard-and-Style-Guide.html)				*/
+/*																									*/
+/*	Namenskonventionen:																				*/
+/*	Präfixes für Konstanten, Variablen, Funktionen und Methoden:									*/
+/*	void/void*					v/pv 		void													*/
+/*	int/int*				  	i/pi		integer													*/
+/*	uint/uint*				  	ui/pui		unsigned integer										*/
+/*	int8_t/int8_t*			  	c/pc		char (Byte)												*/
+/*	uint8_t/uint8_t*		  	uc/puc		unsigned char											*/
+/*	int16_t/int16_t*		  	s/ps		short													*/
+/*	uint16_t/uint16_t*			us/pus		unsigned short											*/
+/*	int32_t/int32_t*			l/pl		long													*/
+/*	uint32_t/uint32_t*			ul/pul		unsigned long											*/
+/*	char/unsigned char			uc/puc		char (byte) für Zeichen									*/
+/*	float/float*				f/pf		float													*/
+/*	double/double*				d/pd		double													*/
+/*	BaseType_t/BaseType_t*		x/px		base type, optimal für Registerbreite					*/
+/*	UBaseType_t/UBaseType_t*	ux/pux		unsigned base type, optimal für Registerbreite 			*/
+/*	TickType_t/TickType_t*		x/px		16/32 Bit, abhängig von Registerbreite					*/
+/*	size_t/size_t*				x/px																*/
+/*	TaskHandle_t				pv			Task-handle (Pointer) für die Referenzierung von Tasks	*/
+/*	SemaphoreHandle_t			x																	*/
+/*	Postfix:																						*/
+/*	class member variables		XYZ_		Unterstrich am Ende jeder Member-Variablen				*/
+/*																									*/
+/*	Lesbarkeit des Quelltextes:																		*/																								
+/*	Space nach ( und vor )																			*/
+/*	Space nach [ und vor ]																			*/
+/*	unter jeder Funktionsdeklaration ----...--- gefolgt von Leerzeile								*/
+/*																									*/
+/*	'Der Unterschied zwischen Theorie und Praxis ist in der Praxis größer als in der Theorie'		*/
+/*																									*/	
+/*--------------------------------------------------------------------------------------------------*/
+#include <KibaControl.h>
 #include <stdint.h>
 /*--------------------------------------------------------------------------------------------------*/
-
-
+/*
+ * liefert größstes Element eines Arrays
+ */
 int iMaxElement( int* piArray, int8_t ucSize )
 {
 	int iDummy = INT_MIN;												// iDummy = kleinstmögliche Zahl
@@ -16,7 +57,9 @@ int iMaxElement( int* piArray, int8_t ucSize )
 	return iDummy;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * liefert kleinstes Element eines Arrays
+ */
 int iMinElement( int* piArray, int8_t ucSize )
 {
 	int iDummy = INT_MAX;												// iDummy = größtmögliche Zahl
@@ -30,7 +73,9 @@ int iMinElement( int* piArray, int8_t ucSize )
 	return iDummy;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Kennlinieninterpolation
+ */
 int map1D::iOut( int iIn )
 {
 	if ( iIn <= piInVec_[ 0 ] ) return piOutVec_[ 0 ];					// unterhalb des Eingangsbereichs -> konst. Extrap.
@@ -45,7 +90,9 @@ int map1D::iOut( int iIn )
   	return ( iIn - piInVec_[ ucPos-1 ] ) * ( piOutVec_[ ucPos ] - piOutVec_[ ucPos-1 ] ) / ( piInVec_[ ucPos ] - piInVec_[ ucPos-1 ] ) + piOutVec_[ ucPos-1 ];
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzen bzw. Definieren einer Kennlinie
+ */
 uint8_t map1D::ucSetMap( int* piIn, int* piOut, uint8_t ucSize )
 {
 	int iInSize = piIn[ 0 ];											// bisher kleinstes Element = erstes Element
@@ -70,31 +117,41 @@ uint8_t map1D::ucSetMap( int* piIn, int* piOut, uint8_t ucSize )
 	return 0;														 	// kein fehler
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Liefert kleinsten möglichen Ausgangswert einer Kennlinie
+ */
 int map1D::iGetMinOut( void )
 {
 	return iOutMin_;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Liefert größten möglichen Ausgangswert einer Kennlinie
+ */
 int map1D::iGetMaxOut( void )
 {
 	return iOutMax_;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Liefert untere Grenze des Wertebereichs der x-Achse
+ */
 int map1D::iGetMinSupportingPoint( void )
 {
 	return iInMin_;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Liefert obere Grenze des Wertebereichs der x-Achse
+ */
 int map1D::iGetMaxSupportingPoint( void )
 {
 	return iInMax_;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Konstruktor eines Objekts der Klasse 'PIDcontrol'
+ */
 PIDcontrol::PIDcontrol( int iKP, int iKI, int iKD, int iOutMin, int iOutMax, map1D Pmap, map1D IMap, map1D DMap)
 {
 	iProportionalGain_ = iKP;
@@ -107,7 +164,9 @@ PIDcontrol::PIDcontrol( int iKP, int iKI, int iKD, int iOutMin, int iOutMax, map
 	DifferentialMap_ = DMap;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Berechnet den Ausgang eines PID-Reglers mit Gain-Scheduling und Anti-Windup
+ */
 int PIDcontrol::iOut( int iDesiredValue, int iActualValue )
 {
 	int iError;
@@ -139,62 +198,82 @@ int PIDcontrol::iOut( int iDesiredValue, int iActualValue )
 	}
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzen der Proportionalverstärkung
+ */
 void PIDcontrol::vSetProportionalGain(int iKP)
 {
 	iProportionalGain_ = iKP;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzen der Integralverstärkung
+ */
 void PIDcontrol::vSetIntegrationalGain(int iKI)
 {
 	iIntegrationalGain_ = iKI;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzt die Differentialverstärkung
+ */
 void PIDcontrol::vSetDifferentialGain(int iKD)
 {
 	iDifferentialGain_ = iKD;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzt die untere Reglerausgangsbeschränkung
+ */
 void PIDcontrol::vSetOutMinLimit( int iOutMin )
 {
 	iOutMinLim_ = iOutMin;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzt die obere Reglerausgangsbeschränkung
+ */
 void PIDcontrol::vSetOutMaxLimit( int iOutMax )
 {
 	iOutMaxLim_ = iOutMax;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzt das Gain-Scheduling für den Proportionalanteil
+ */
 void PIDcontrol::vSetProportionalGainScheduling( map1D Pmap )
 {
 	ProportionalMap_ = Pmap;	
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzt das Gain-Scheduling für den Integralanteil
+ */
 void PIDcontrol::vSetIntegrationalGainScheduling( map1D Imap )
 {
 	IntegrationalMap_ = Imap;	
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzt das Gain-Scheduling für den Differentialanteil
+ */
 void PIDcontrol::vSetDifferentialGainScheduling( map1D Dmap )
 {
 	DifferentialMap_ = Dmap;	
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Setzt den Integrierer zurück auf '0'
+ */
 void PIDcontrol::vResetIntegrator( void )
 {
 	iIntegrator_ = 0;
 	ucIsLimited_ = 0;
 }
 /*--------------------------------------------------------------------------------------------------*/
-
+/*
+ * Liefert den Anti-Windup-Status (1 = Reglerausgangsbeschränkung aktiv, 0 = Reglerausgangsbeschränkung nicht aktiv)
+ */
 uint8_t PIDcontrol::ucGetAntiWindupState( void )
 {
 	return ucIsLimited_;

@@ -2,42 +2,43 @@
 /*	KibaControl		Kennlinien und -interpolation	                                */
 /*					PID-Regler mit Gain-Scheduling und Anti-Windup																				*/
 /*																																																*/
-/*	Frank Kirschbaum (frank.kirschbaum@me.com)                                  */
-/*																																																*/
-/*	Kibas Coding Standard and Style Guide:                                    */
-/*  (frei nach http://www.freertos.org/FreeRTOS-Coding-Standard-and-Style-Guide.html)							*/
-/*																																																*/
-/*	Namenskonventionen:																																						*/
-/*	Präfixes für Konstanten, Variablen, Funktionen und Methoden:																	*/
-/*	void/void*								v/pv   void																													*/
-/*	int/int*				       i/pi		integer																											*/
-/*	uint/uint*				      ui/pui		unsigned integer																					*/
-/*	int8_t/int8_t*			     c/pc		char (Byte)																									*/
-/*	uint8_t/uint8_t*		     uc/puc		unsigned char																							*/
-/*	int16_t/int16_t*		     s/ps		short																												*/
-/*	uint16_t/uint16_t*				us/pus		unsigned short																						*/
-/*	int32_t/int32_t*					l/pl		long																												*/
-/*	uint32_t/uint32_t*				ul/pul		unsigned long																							*/
-/*	char/unsigned char				uc/puc		char (byte) für Zeichen																		*/
-/*	float/float*							f/pf		float																												*/
-/*	double/double*						d/pd		double																											*/
-/*	BaseType_t/BaseType_t*		x/px		base type, optimal für Registerbreite												*/
-/*	UBaseType_t/UBaseType_t*	ux/pux		unsigned base type, optimal für Registerbreite        */
-/*	TickType_t/TickType_t*		x/px		16/32 Bit, abhängig von Registerbreite											*/
-/*	size_t/size_t*						x/px																																*/
-/*	TaskHandle_t							pv			Task-handle (Pointer) für die Referenzierung von Tasks			*/
-/*	SemaphoreHandle_t					x																																		*/
-/*	Postfix:																																											*/
-/*	class member variables		XYZ_		Unterstrich am Ende jeder Member-Variablen									*/
-/*																																																*/
-/*	Lesbarkeit des Quelltextes:																																		*/
-/*	Space nach ( und vor )																																				*/
-/*	Space nach [ und vor ]																																				*/
-/*	unter jeder Funktionsdeklaration etc. ----...---                              */
-/*																																																*/
-/*	'Der Unterschied zwischen Theorie und Praxis ist in der Praxis größer als in der Theorie'			*/
-/*																																																*/
-/*------------------------------------------------------------------------------------------------*/
+/*	Frank Kirschbaum (frank.kirschbaum@me.com)                                 					     */
+/*																								     */
+/*																								     */
+/*	Kibas Coding Standard and Style Guide:                                    					     */
+/*  (frei nach http://www.freertos.org/FreeRTOS-Coding-Standard-and-Style-Guide.html)			     */
+/*																								     */
+/*	Namenskonventionen:																			     */
+/*	Präfixes für Konstanten, Variablen, Funktionen und Methoden:								     */
+/*	void/void*                   v/pv    void                                                        */
+/*	int/int*                     i/pi    integer                                                     */
+/*	uint/uint*                   ui/pui  unsigned integer                                            */
+/*	int8_t/int8_t*               c/pc    char (Byte)                                                 */
+/*	uint8_t/uint8_t*             uc/puc  unsigned char										         */
+/*	int16_t/int16_t*             s/ps    short                                                       */
+/*	uint16_t/uint16_t*           us/pus  unsigned short                                              */
+/*	int32_t/int32_t*             l/pl    long                                                        */
+/*	uint32_t/uint32_t*           ul/pul  unsigned long                                               */
+/*	char/unsigned char           uc/puc  char (byte) für Zeichen                                     */
+/*	float/float*                 f/pf    float                                                       */
+/*	double/double*               d/pd    double                                                      */
+/*	BaseType_t/BaseType_t*       x/px    base type, optimal für Registerbreite                       */
+/*	UBaseType_t/UBaseType_t*     ux/pux  unsigned base type, optimal für Registerbreite              */
+/*	TickType_t/TickType_t*       x/px    16/32 Bit, abhängig von Registerbreite                      */
+/*	size_t/size_t*               x/px                                                                */
+/*	TaskHandle_t                 pv      Task-handle (Pointer) für die Referenzierung von Tasks      */
+/*	SemaphoreHandle_t            x                                                                   */
+/*	Postfix:                                                                                         */
+/*	class member variables       XYZ_		Unterstrich am Ende jeder Member-Variablen               */
+/*                                                                                                   */
+/*	Lesbarkeit des Quelltextes:	                                                                     */
+/*	Space nach ( und vor )                                                                           */
+/*	Space nach [ und vor ]                                                                           */
+/*	unter jeder Funktionsdeklaration etc. ----...---                                                 */
+/*                                                                                                   */
+/*	'Der Unterschied zwischen Theorie und Praxis ist in der Praxis größer als in der Theorie'        */
+/*                                                                                                   */
+/*---------------------------------------------------------------------------------------------------*/
 #include <KibaControl.h>
 #include <stdint.h>
 /*------------------------------------------------------------------------------------------------*/

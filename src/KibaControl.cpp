@@ -76,7 +76,7 @@
  /*------------------------------------------------------------------------------------------------*/
  /*
   * Kennlinieninterpolation
- */
+  */
  int map1D::iOut( int iIn )
  {
 	 if ( iIn <= piInVec_[ 0 ] ) return piOutVec_[ 0 ]; // unterhalb des Eingangsbereichs -> konst. Extrap.

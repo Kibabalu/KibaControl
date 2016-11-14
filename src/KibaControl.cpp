@@ -39,7 +39,7 @@
 /*	'Der Unterschied zwischen Theorie und Praxis ist in der Praxis größer als in der Theorie'        */
 /*                                                                                                   */
 /*---------------------------------------------------------------------------------------------------*/
-#include <KibaControl.h>
+#include <KibaControl.hpp>
 #include <stdint.h>
 /*------------------------------------------------------------------------------------------------*/
 /*
